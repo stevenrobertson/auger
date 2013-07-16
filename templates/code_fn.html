@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code fn</title>
+    <script src="static/jquery-2.0.2.min.js"></script>
+  </head>
+  <body>
+    <div style="display: inline-block; width: 720px;">
+      <h3>Code</h3>
+      <code>{{ fncode }}</code>
+    </div>
+    <div style="display: inline-block;">
+      <h3>Invocations</h3>
+      <ul>
+        {% for i in invocations %}
+        <li><a href="/code/fn/{{ code_id }}/inv/{{ i }}">At pos={{ i }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>

@@ -1,9 +1,11 @@
 import json
-import collections
+from collections import namedtuple
 
-Event = collections.namedtuple('Event', 't type val')
-Sample = collections.namedtuple('Sample', 'y')
-LayerSample = collections.namedtuple('LayerSample', 'y0 y')
+import tracer
+
+Event = namedtuple('Event', 't type val')
+Sample = namedtuple('Sample', 'y')
+LayerSample = namedtuple('LayerSample', 'y0 y')
 
 class Peekable(object):
     def __init__(self, stream):
@@ -107,24 +109,20 @@ def layer_stream_samples(force, stream_stream, get_samples):
         yield stream, out_sample_stream
     runUntil(window)
 
+lasttracer = None
+
 def main():
-    data = json.load(open('static/reports/report-10025.json'))
-    req_stream = (x for x in sorted(data, key=lambda x: x.get('startOffset')))
-    for in_val, out in layer_stream_samples(req_stream,
-        lambda req: (Event(req['startOffset'] + s['timeSinceStart'],
-                           'Sample', Sample(s['loaded']))
-                           for s in req['samples'])):
-        print in_val
-        print list(iter(out))
-
-class EventStream(object):
-    def __init__(self):
-        self.closed = False
-
-    @property
-    def ready(self):
-        return not self.closed
-
+    global lasttracer
+    lasttracer = t = tracer.Tracer('/tmp/trace.pickle')
+    with t:
+        data = json.load(open('static/reports/report-10025.json'))
+        req_stream = (x for x in sorted(data, key=lambda x: x.get('startOffset')))
+        for in_val, out in layer_stream_samples(req_stream,
+            lambda req: (Event(req['startOffset'] + s['timeSinceStart'],
+                               'Sample', Sample(s['loaded']))
+                               for s in req['samples'])):
+            print in_val
+            print list(iter(out))
 
 if __name__ == "__main__":
     main()
