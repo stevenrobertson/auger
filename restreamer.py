@@ -1,4 +1,8 @@
-import json
+# A "simple" program so unnecessarily complicated that I can't trivially
+# debug it. Mostly a self-test; if/when the tool gets good enough to make
+# this program's behavior obvious, then we're probably on to something.
+
+import json, pprint
 from collections import namedtuple
 
 import tracer
@@ -26,7 +30,6 @@ class AttributeGetter(object):
     def __getattr__(self, name):
         return AttributeGetter(self.___stack + (name,), self.___elide)
     def __getitem__(self, idx):
-        # yeah i'm not going to worry about slices et al just yet
         return AttributeGetter(self.___stack + (idx,), self.___elide)
     def __call__(self, obj):
         for name in self.___stack:
@@ -112,17 +115,17 @@ def layer_stream_samples(force, stream_stream, get_samples):
 lasttracer = None
 
 def main():
-    global lasttracer
-    lasttracer = t = tracer.Tracer('/tmp/trace.pickle')
-    with t:
-        data = json.load(open('static/reports/report-10025.json'))
-        req_stream = (x for x in sorted(data, key=lambda x: x.get('startOffset')))
-        for in_val, out in layer_stream_samples(req_stream,
-            lambda req: (Event(req['startOffset'] + s['timeSinceStart'],
-                               'Sample', Sample(s['loaded']))
-                               for s in req['samples'])):
-            print in_val
-            print list(iter(out))
+    data = json.load(open('static/reports/report-10025.json'))
+    req_stream = (x for x in sorted(data, key=lambda x: x.get('startOffset')))
+    for in_val, out in layer_stream_samples(req_stream,
+        lambda req: (Event(req['startOffset'] + s['timeSinceStart'],
+                           'Sample', Sample(s['loaded']))
+                           for s in req['samples'])):
+        pprint.pprint(list(iter(out)))
+
+lasttracer = None
 
 if __name__ == "__main__":
-    main()
+    lasttracer = tracer.Tracer('/tmp/trace.pickle', stash_modules=True)
+    with lasttracer:
+        main()

@@ -6,8 +6,10 @@
   </head>
   <body>
     <ul>
-      {% for id, code in revcode %}
-      <li><a href="/code/fn/{{ id }}">{{ id }} - {{ code }}</a></li>
+      {% for id, code in enum_code %}
+      <li><a href="/code/fn/{{ id }}">
+        {{ id }} - {{ code.tb.filename }} {{ code.tb.function }}</a>
+      {{ code.tb.code_context }}</li>
       {% endfor %}
     </ul>
   </body>

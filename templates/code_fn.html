@@ -3,17 +3,30 @@
   <head>
     <title>Code fn</title>
     <script src="static/jquery-2.0.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
     <div style="display: inline-block; width: 720px;">
       <h3>Code</h3>
-      <code>{{ fncode }}</code>
+      <div class="layer">
+        {% for cls, ctx, line in fncode %}
+        <pre class="{{ cls }}">{{ ctx }}{{ line }}</pre>
+        {% endfor %}
+      </div>
     </div>
-    <div style="display: inline-block;">
+    <div style="display: inline-block; float: right;">
       <h3>Invocations</h3>
+      <p>Showing invocation at pos {{ inv.pos }}, called from
+      {% if caller_inv %}
+        <a href="/code/fn/{{ caller_id }}/inv/{{ caller_inv.pos }}">
+          {{ caller_inv.code.tb.function }}</a>.
+      {% else %}
+      the top level (I think?).
+      {% endif %}
+      </p>
       <ul>
-        {% for i in invocations %}
-        <li><a href="/code/fn/{{ code_id }}/inv/{{ i }}">At pos={{ i }}</a></li>
+        {% for code, pos in invocations %}
+        <li><a href="/code/fn/{{ code_id }}/inv/{{ pos }}">At pos={{ pos }}</a></li>
         {% endfor %}
       </ul>
     </div>

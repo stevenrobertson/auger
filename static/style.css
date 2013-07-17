@@ -3,4 +3,32 @@
   fill: steelblue;
 }
 
+.layer pre {
+  margin: 0;
+  border-left: 2px solid rgba(0, 0, 0, 0);
+}
 
+.layer pre.call {
+  border-left: 2px solid black;
+}
+
+.layer pre.ret {
+  color: #149;
+  border-left: 2px dotted gray;
+}
+
+.layer pre.call {
+  color: #784;
+}
+
+.layer pre.backtrack {
+  border-top: 1px solid #eee;
+}
+
+.layer pre.skipped {
+  color: #aaa;
+}
+
+.layer pre.val {
+  font-weight: 700;
+}
